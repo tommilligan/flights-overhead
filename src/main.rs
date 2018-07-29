@@ -1,34 +1,13 @@
-extern crate clap;
-extern crate reqwest;
-use clap::{Arg, App};
-
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct PostcodeApiResponse<T> {
-    status: u64,
-    result: T
-}
+extern crate clap;
+use clap::{Arg, App};
 
-#[derive(Serialize, Deserialize, Debug)]
-struct PostcodeLocation {
-    country: String,
-    latitude: f64,
-    longitude: f64,
-    postcode: String,
-    region: String
-}
-
-/// Get location metadata from a postcode
-fn get_postcode_location(postcode: &str) -> PostcodeLocation {
-    let postcode_url = format!("https://api.postcodes.io/postcodes/{}", postcode);
-    let res: PostcodeApiResponse<PostcodeLocation> = reqwest::get(&postcode_url).unwrap().json().unwrap();
-    println!("response: {:?}", res);
-    res.result
-}
+mod services;
+use services::postcode::{PostcodeLocation};
 
 /// Returns the clap command line parser
 fn main_parser<'a>() -> clap::App<'a, 'a> {
@@ -47,7 +26,7 @@ fn main() {
     // required we could have used an 'if let' to conditionally get the value)
     let postcode: &str = matches.value_of("POSTCODE").unwrap();
 
-    let location = get_postcode_location(&postcode);
+    let location = PostcodeLocation::from_postcode(&postcode);
 
 }
 
