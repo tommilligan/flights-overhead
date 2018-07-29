@@ -9,9 +9,9 @@ pub struct BBox {
 }
 
 impl BBox {
-    pub fn surrounding(point: Point, diameter: f64) -> BBox {
-        let delta_lng = (diameter / (111.320 * point.lat.to_radians().cos())) / 2.0;
-        let delta_lat = (diameter / 110.574) / 2.0;
+    pub fn surrounding(point: Point, radius: f64) -> BBox {
+        let delta_lng = (radius / (111.320 * point.lat.to_radians().cos())) / 2.0;
+        let delta_lat = (radius / 110.574) / 2.0;
 
         BBox {
             lng_min: point.lng - delta_lng,
