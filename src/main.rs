@@ -7,37 +7,10 @@ extern crate serde_json;
 extern crate clap;
 use clap::{Arg, App};
 
+mod common;
 mod services;
 use services::postcodes::{PostcodeLocation};
-
-#[derive(Debug)]
-struct BBox {
-    pub lng_min: f64,
-    pub lng_max: f64,
-    pub lat_min: f64,
-    pub lat_max: f64
-}
-
-impl BBox {
-    pub fn surrounding(point: Point, diameter: f64) -> BBox {
-        let delta_lng = (diameter / (111.320 * point.lat.to_radians().cos())) / 2.0;
-        let delta_lat = (diameter / 110.574) / 2.0;
-
-        BBox {
-            lng_min: point.lng - delta_lng,
-            lng_max: point.lng + delta_lng,
-            lat_min: point.lat - delta_lat,
-            lat_max: point.lat + delta_lat
-        }
-    }
-}
-
-#[derive(Debug)]
-struct Point {
-    pub lng: f64,
-    pub lat: f64,
-}
-
+use common::{BBox, Point};
 
 /// Returns the clap command line parser
 fn main_parser<'a>() -> clap::App<'a, 'a> {
@@ -60,7 +33,16 @@ fn main() {
 
     let location = PostcodeLocation::from_postcode(&postcode);
     let bbox = BBox::surrounding(Point{ lng: location.longitude, lat: location.latitude }, diameter);
-    println!("location: {:?}", bbox);
+    
+    let states = services::opensky::flights_over(bbox);
+
+    println!("Currently overhead:");
+    for state in &states {
+        println!("- {}: {}", state.callsign, match &state.position {
+            Some(p) => format!("{}", p),
+            None => String::from("(position unknown)")
+        });
+    }
 
 }
 
