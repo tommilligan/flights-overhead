@@ -1,11 +1,12 @@
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
+use std::{thread, time};
 
 #[macro_use]
 extern crate clap;
 use clap::{Arg, App};
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
 
 mod common;
 mod services;
@@ -34,15 +35,19 @@ fn main() {
     let location = PostcodeLocation::from_postcode(&postcode);
     let bbox = BBox::surrounding(Point{ lng: location.longitude, lat: location.latitude }, diameter);
     
-    let states = services::opensky::flights_over(bbox);
+    let tick = time::Duration::from_millis(30000);
+    loop {
+        let states = services::opensky::flights_over(&bbox);
 
-    println!("Currently overhead:");
-    for state in &states {
-        println!("- {}: {}", state.callsign, match &state.position {
-            Some(p) => format!("{}", p),
-            None => String::from("(position unknown)")
-        });
+        println!("Currently overhead:");
+        for state in &states {
+            println!("- {}: {}", state.callsign, match &state.position {
+                Some(p) => format!("{}", p),
+                None => String::from("(position unknown)")
+            });
+        }
+
+        thread::sleep(tick);
     }
-
 }
 

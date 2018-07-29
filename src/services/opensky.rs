@@ -81,7 +81,7 @@ impl Plane {
     }
 }
 
-pub fn flights_over(bbox: BBox) -> Vec<Plane> {
+pub fn flights_over(bbox: &BBox) -> Vec<Plane> {
     let opensky_url = format!(
         "https://opensky-network.org/api/states/all?lomin={}&lamin={}&lomax={}&lamax={}",
         bbox.lng_min,
