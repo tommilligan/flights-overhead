@@ -68,6 +68,9 @@ fn main() {
         // Clear screen and mark location
         write!(stdout, "{}", termion::clear::All).unwrap();
         write!(stdout, "{}x", termion::cursor::Goto(origin.0 as u16, origin.1 as u16)).unwrap();
+        write!(stdout, "{}  N", termion::cursor::Goto(2, 1)).unwrap();
+        write!(stdout, "{}W + E", termion::cursor::Goto(2, 2)).unwrap();
+        write!(stdout, "{}  S", termion::cursor::Goto(2, 3)).unwrap();
 
         // For each plane
         for state in &states {
@@ -82,7 +85,7 @@ fn main() {
                     let y = origin.1 as i64 - y_delta;
                     // Draw
                     write!(stdout, "{}", termion::cursor::Goto(x as u16, y as u16)).unwrap();
-                    write!(stdout, ".{}", state.callsign).unwrap();
+                    write!(stdout, "-{}|", state.callsign).unwrap();
                 },
                 None => ()
             };
