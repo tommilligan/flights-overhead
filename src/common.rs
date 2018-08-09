@@ -5,19 +5,25 @@ pub struct BBox {
     pub lng_min: f64,
     pub lng_max: f64,
     pub lat_min: f64,
-    pub lat_max: f64
+    pub lat_max: f64,
+
+    pub lng_radius: f64,
+    pub lat_radius: f64,
 }
 
 impl BBox {
-    pub fn surrounding(point: Point, radius: f64) -> BBox {
-        let delta_lng = (radius / (111.320 * point.lat.to_radians().cos())) / 2.0;
-        let delta_lat = (radius / 110.574) / 2.0;
+    pub fn surrounding(point: Point, radius: f64) -> Self {
+        let lng_radius = (radius / (111.320 * point.lat.to_radians().cos())) / 2.0;
+        let lat_radius = (radius / 110.574) / 2.0;
 
         BBox {
-            lng_min: point.lng - delta_lng,
-            lng_max: point.lng + delta_lng,
-            lat_min: point.lat - delta_lat,
-            lat_max: point.lat + delta_lat
+            lng_min: point.lng - lng_radius,
+            lng_max: point.lng + lng_radius,
+            lat_min: point.lat - lat_radius,
+            lat_max: point.lat + lat_radius,
+
+            lng_radius: lng_radius,
+            lat_radius: lat_radius
         }
     }
 }
